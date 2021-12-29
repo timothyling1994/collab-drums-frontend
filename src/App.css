@@ -65,3 +65,97 @@
   width: 100%;
   text-align: center;
 }
+
+#room-title{
+  width: 100%;
+  text-align: center;
+  font-family: slaytanic, Arial;
+  font-size: 5em;
+  margin-top: 0.1em;
+
+}
+
+#drum-grid{
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+#control-panel{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.control-btn{
+  height: 3em;
+  width: 3em;
+  margin: 0.5em;
+}
+.control-btn:hover{
+
+}
+#bpm{
+  width: 3em;
+  text-align: center;
+  font-size: 1.5rem;
+}
+.instrument{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1em;
+}
+.drum-box{
+  height: 2em;
+  width: 2em;
+  border-left: solid black 2px;
+  border-right: solid black 2px;
+  border-top: solid black 4px;
+  border-bottom: solid black 4px;
+}
+
+.drum-box:hover{
+  background-color: grey;
+}
+.first{
+  border-left: solid black 4px;
+}
+.fourth{
+  margin-right: 0.25em;
+  border-right: solid black 4px;
+}
+.last{
+  border-right: solid black 4px;
+}
+.add-sample{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1em;
+  flex-wrap: wrap;
+  width: 6em;
+}
+.sample-icon{
+  height: 3em;
+  width: 3em;
+  margin-bottom: 0.5em;
+
+}
+.add-sample:hover{
+  background-color: #ff9300;
+}
+.add-sample-descrip{
+  width: 100%;
+  text-align: center;
+}
+
+.highlighted{
+  border-color: #ff9300;
+}
+
+.clicked{
+  background-color: #00b341;
+}
