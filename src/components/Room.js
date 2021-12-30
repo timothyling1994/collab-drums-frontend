@@ -1,6 +1,5 @@
 import '../App.css';
 import {useState,useEffect} from "react";
-import uniqid from "uniqid";
 
 import vinyl_svg from '../public/vinyl.svg';
 import play_svg from '../public/play.svg';
@@ -19,9 +18,9 @@ function Room(props) {
   };
 
   useEffect(() => {
-    //const { id } = props.match.params;
-    //setRoomId(id);
-    //initializeRoom(id);
+  
+    setRoomId(props.roomId);
+    initializeRoom(props.roomId);
   },[]);
 
 

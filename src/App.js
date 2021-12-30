@@ -4,14 +4,13 @@ import uniqid from "uniqid";
 import { Router, Switch, Route } from "react-router-dom";
 import history from './history.js';
 
-import Room from "./components/Room.js";
+import ProtectedComponent from "./components/ProtectedComponent.js";
 
 
 function App() {
 
   const [displayRooms, setDisplayRooms] = useState(false);
   const [roomList, setRoomList] = useState();
-  const [isValidRoom, setIsValidRoom] = useState(false);
 
 
   const toggleDisplayRooms = () => {
@@ -23,18 +22,13 @@ function App() {
         let response = await fetch('http://localhost:8080/room/'+roomId);
         response = await response.json();
         console.log(response.isValid);
-        setIsValidRoom(true);
+        return response.isValid;
     }
     catch(e){
       console.error(e);
-      setIsValidRoom(false);
+      return false;
     }
   };
-
-  const checkIfValid = () => {
-    console.log("checked");
-  };
-
 
   useEffect(() => {
 
@@ -52,6 +46,7 @@ function App() {
     })();
 
   },[]);
+
 
 
 
@@ -87,26 +82,13 @@ function App() {
               }
           </Route>
 
-          <Route path="/room/:id" render={(props) => {
-                try {
-                  const isValid = checkIfValidRoom(props.match.params.id);
-                  if(isValidRoom)
-                  {
-                    return <Room/>;
-                  }
-                  else
-                  {
-                    history.push("/home");
-                  }
-                }
-                catch(e){
-                  console.error(e);
-                }    
-                
-            }}>
-
-
-          </Route>
+          <Route exact path="/room/:id" render={(props) => <ProtectedComponent
+              checkIfValidRoom={checkIfValidRoom}
+              redirect='/home'
+              history={history}
+              {...props}
+              />
+          } />
 
         
         </Switch>
@@ -118,3 +100,26 @@ function App() {
 
 export default App;
 //<Route path="/room/:id" render={(props) => <Room {...props} />} />
+/*render={(props) => {
+                try {
+                  const isValid = checkIfValidRoom(props.match.params.id);
+                  if(isValidRoom)
+                  {
+                    return <Room props={props}/>;
+                  }
+                  else
+                  {
+                    history.push("/home");
+                  }
+                }
+                catch(e){
+                  console.error(e);
+                }    
+                
+            }}
+*/
+/*    const location = useLocation();
+
+    useEffect(() => {
+      console.log('Location changed');
+    }, [location]);*/
