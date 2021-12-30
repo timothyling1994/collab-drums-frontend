@@ -13,7 +13,7 @@ function Room(props) {
   const [roomId,setRoomId] = useState(null);
 
   const initializeRoom = () => {
-
+    console.log("initialized");
 
   };
 
@@ -27,7 +27,7 @@ function Room(props) {
 
   return (
     <div className="Room">
-      <div id="room-title">Collab Drums</div>
+      <div id="title">Collab Drums</div>
       <div id="main-container">
         <div id="message-container"></div>
           <form id="send-container">

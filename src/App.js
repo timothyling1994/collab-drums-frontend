@@ -56,7 +56,7 @@ function App() {
       <Router history={history}>
         <Switch>
           <Route exact path="/home">
-              <div id="main-container-title">Collab Drums</div>
+              <div id="main-container-title" onClick={()=>history.push("/home")}>Collab Drums</div>
               {
                 displayRooms ? <div id="public-room-container">
                     {
@@ -82,11 +82,12 @@ function App() {
               }
           </Route>
 
-          <Route exact path="/room/:id" render={(props) => <ProtectedComponent
-              checkIfValidRoom={checkIfValidRoom}
-              redirect='/home'
-              history={history}
-              {...props}
+          <Route path="/room/:id" render={(props) => 
+              <ProtectedComponent
+                checkIfValidRoom={checkIfValidRoom}
+                redirect='/home'
+                history={history}
+                {...props}
               />
           } />
 
