@@ -12,7 +12,7 @@ import NotValidRoom from "./NotValidRoom.js";
 
 function ProtectedComponent(props) {
 
-  const [isValid, setIsValid] = useState(false);
+  const [isValid, setIsValid] = useState();
 
   useEffect(()=>{
 
@@ -23,13 +23,13 @@ function ProtectedComponent(props) {
 
     checkIfValid();
     
-  },[props.match.params.id]);
+  },[]);
 
   return (
 
     <div className="ProtectedComponent">
       {
-        isValid ? <Room roomId={props.match.params.id}/> : <NotValidRoom/>
+        isValid ? <Room roomId={props.match.params.id} setDisplayRooms={props.setDisplayRooms}/> : <NotValidRoom/>
       }
     </div> 
   );

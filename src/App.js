@@ -30,12 +30,31 @@ function App() {
     }
   };
 
+  const createPublicRoom = async () => {
+    try {
+        let response = await fetch('http://localhost:8080/create-public-room',{
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+
+        });
+        response = await response.json();
+        console.log(response);
+    
+    }
+    catch(e){
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
 
     (async () => {
       
       try{
-        let response = await fetch('http://localhost:8080/join-public-room');
+        let response = await fetch('http://localhost:8080/display-public-rooms');
         response = await response.json();
         setRoomList(response.rooms);
 
@@ -56,7 +75,14 @@ function App() {
       <Router history={history}>
         <Switch>
           <Route exact path="/home">
-              <div id="main-container-title" onClick={()=>history.push("/home")}>Collab Drums</div>
+              <div id="main-container-title" onClick={
+                ()=>
+                {
+                  history.push("/home");
+                  setDisplayRooms(false);
+                } 
+
+              }>Collab Drums</div>
               {
                 displayRooms ? <div id="public-room-container">
                     {
@@ -71,7 +97,7 @@ function App() {
                     <button className="main-btn" onClick={toggleDisplayRooms}>Join Public Room</button>
                   </div>
                   <div id="create-public-room">
-                    <button className="main-btn" type="submit">Create Public Room</button>
+                    <button className="main-btn" onClick={createPublicRoom}>Create Public Room</button>
                   </div>
                   <div id="create-private-room">
                     <form action="/create-private-room" method="POST">
@@ -87,6 +113,7 @@ function App() {
                 checkIfValidRoom={checkIfValidRoom}
                 redirect='/home'
                 history={history}
+                setDisplayRooms={setDisplayRooms}
                 {...props}
               />
           } />
@@ -100,27 +127,3 @@ function App() {
 }
 
 export default App;
-//<Route path="/room/:id" render={(props) => <Room {...props} />} />
-/*render={(props) => {
-                try {
-                  const isValid = checkIfValidRoom(props.match.params.id);
-                  if(isValidRoom)
-                  {
-                    return <Room props={props}/>;
-                  }
-                  else
-                  {
-                    history.push("/home");
-                  }
-                }
-                catch(e){
-                  console.error(e);
-                }    
-                
-            }}
-*/
-/*    const location = useLocation();
-
-    useEffect(() => {
-      console.log('Location changed');
-    }, [location]);*/
