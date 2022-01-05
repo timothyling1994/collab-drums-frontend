@@ -20,7 +20,6 @@ function Room(props) {
   const [bpm,setBPM] = useState();
   const [audioSamples, setAudioSamples] = useState([]);
   const [toggleAudioIcon, setToggleAudioIcon] = useState([true,true,true,true,true,true]);
-  const [currentSocket, setCurrentSocket] = useState(null);
 
   const initializeRoom = async () => {
     
@@ -34,6 +33,7 @@ function Room(props) {
         response.room[0].roomData.tracks.map(track=>{
             gridArr.push(track.stepArray);
             audioArr.push(track.audioURL);
+            return true;
         });
 
         setBPM(response.room[0].roomData.bpm);
@@ -115,13 +115,39 @@ function Room(props) {
     const fileList = e.target.files;
     
     console.log(socket);
+
+    try {
+      let response = await fetch('http://localhost:8080/update-audio-settings/',{
+        method: 'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body: {
+          file: fileList[0],
+          roomId: roomId,
+          instrumentNum: trackNum,
+          fileName:fileList[0].name,
+          contentType: fileList[0].type,
+        }
+      });
+
+      const responseData = await response.json();
+      console.log(responseData);
+
+    } catch (e) {
+      console.error(e);
+    }
+
+    /*    
     socket.emit("send_audio",{
       file: fileList[0],
       roomId: roomId,
       instrumentNum: trackNum,
       fileName:fileList[0].name,
       contentType: fileList[0].type,
-    });
+    });*/
+
+
 
     //send this file to firebase storage
     //
@@ -129,8 +155,6 @@ function Room(props) {
   };
 
   useEffect(() => {
-
-    //setCurrentSocket(socket);
     
     socket.on('user-connected', name => {
       console.log('user connected:'+name);
@@ -145,7 +169,6 @@ function Room(props) {
 
     return () => {
       socket.disconnect();
-      setCurrentSocket(null);
     };
     
   },[]);
@@ -191,7 +214,7 @@ function Room(props) {
           {
             grid.map((track,trackNum)=>{
               return (
-                <div className="instrument" id={"instrument-"+trackNum}>
+                <div className="instrument" id={"instrument-"+trackNum} key={uniqid()}>
                   {
                     toggleAudioIcon[trackNum] ? <div className="add-sample" id={"add-sample-"+trackNum} onClick={()=>toggleSampleIcon(trackNum)}>
                       <img className="sample-icon" src={vinyl_svg} alt="sample button"></img>

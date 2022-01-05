@@ -1,8 +1,5 @@
 import '../App.css';
 import {useState,useEffect} from "react";
-import { Redirect } from 'react-router-dom';
-
-
 
 import Room from "./Room.js";
 import NotValidRoom from "./NotValidRoom.js";
