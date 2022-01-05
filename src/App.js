@@ -10,7 +10,7 @@ import ProtectedComponent from "./components/ProtectedComponent.js";
 function App() {
 
   const [displayRooms, setDisplayRooms] = useState(false);
-  const [roomList, setRoomList] = useState();
+  const [roomList, setRoomList] = useState([]);
 
 
   const toggleDisplayRooms = () => {
@@ -21,7 +21,6 @@ function App() {
     try {
         let response = await fetch('http://localhost:8080/room/'+roomId);
         response = await response.json();
-        console.log(response.isValid);
         return response.isValid;
     }
     catch(e){
