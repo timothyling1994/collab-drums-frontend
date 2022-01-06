@@ -9,7 +9,7 @@ import NotValidRoom from "./NotValidRoom.js";
 
 function ProtectedComponent(props) {
 
-  const [isValid, setIsValid] = useState();
+  const [isValid, setIsValid] = useState(true);
 
   useEffect(()=>{
 

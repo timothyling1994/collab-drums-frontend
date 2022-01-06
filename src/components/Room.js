@@ -9,6 +9,7 @@ import pause_svg from '../public/pause.svg';
 import trash_svg from '../public/trash.svg';
 
 import socketIOClient from "socket.io-client";
+
 const ENDPOINT = "http://localhost:8080";
 
 
@@ -113,22 +114,26 @@ function Room(props) {
 
     console.log(e.target.files);
     const fileList = e.target.files;
+
+    const formData = new FormData();
+    formData.append('roomId',roomId);
+    formData.append('instrumentNum',trackNum);
+    formData.append('fileName',fileList[0].name);
+    formData.append('contentType',fileList[0].type);
+    formData.append('audio',fileList[0]);
     
-    console.log(socket);
 
     try {
-      let response = await fetch('http://localhost:8080/update-audio-settings/',{
+      let response = await fetch('http://localhost:8080/update-audio-settings/',
+      {
         method: 'POST',
+        mode:'cors',
         headers:{
-          'Content-Type':'application/json'
+          'Accept':'application/json',
+          'Origin':'http://localhost:3000/room/1gtirs1ziaky0hpww2',
+
         },
-        body: {
-          file: fileList[0],
-          roomId: roomId,
-          instrumentNum: trackNum,
-          fileName:fileList[0].name,
-          contentType: fileList[0].type,
-        }
+        body: formData,
       });
 
       const responseData = await response.json();
@@ -266,4 +271,10 @@ export default Room;
             <input type="text" id="message-input"/>
             <button type="submit" id="send-button">Send</button>
           </form>
+
+          <form action="/update-audio-settings" method="post" encType="multipart/form-data">
+                      <input type="file" name="audio" className="file-input" accept=".wav,.mp3"/>
+                    </form>
+
+          <input type="file" className="file-input" accept=".wav,.mp3" onChange={(e)=>loadSample(e,trackNum)}/>
 */
