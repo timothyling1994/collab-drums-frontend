@@ -40,7 +40,26 @@ function App() {
 
         });
         response = await response.json();
-        console.log(response);
+        history.push("/room/"+response.roomId);
+    
+    }
+    catch(e){
+      console.error(e);
+    }
+  };
+
+  const createPrivateRoom = async () => {
+    try {
+        let response = await fetch('http://localhost:8080/create-private-room',{
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+
+        });
+        response = await response.json();
+        history.push("/room/"+response.roomId);
     
     }
     catch(e){

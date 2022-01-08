@@ -20,6 +20,7 @@ function Room(props) {
   const [grid,setGrid] = useState([]);
   const [bpm,setBPM] = useState();
   const [audioSamples, setAudioSamples] = useState([]);
+  const [audioSampleNames, setAudioSampleNames] = useState([]);
   const [toggleAudioIcon, setToggleAudioIcon] = useState([true,true,true,true,true,true]);
 
   const initializeRoom = async () => {
@@ -31,15 +32,24 @@ function Room(props) {
 
         let gridArr = [];
         let audioArr = [];
-        response.room[0].roomData.tracks.map(track=>{
+        let audioNameArr = [];
+
+        console.log(response);
+
+        if(response.room[0].roomData !== null)
+        {
+          response.room[0].roomData.tracks.map(track=>{
             gridArr.push(track.stepArray);
             audioArr.push(track.audioURL);
+            audioNameArr.push(track.audioName);
             return true;
-        });
+          });
 
-        setBPM(response.room[0].roomData.bpm);
-        setGrid(gridArr);
-        setAudioSamples(audioArr);
+          setBPM(response.room[0].roomData.bpm);
+          setGrid(gridArr);
+          setAudioSamples(audioArr);
+          setAudioSampleNames(audioNameArr);
+        }   
 
     }
     catch(e){
@@ -115,12 +125,16 @@ function Room(props) {
     console.log(e.target.files);
     const fileList = e.target.files;
 
+    console.log(fileList);
+
     const formData = new FormData();
     formData.append('roomId',roomId);
     formData.append('instrumentNum',trackNum);
     formData.append('fileName',fileList[0].name);
     formData.append('contentType',fileList[0].type);
-    formData.append('audio',fileList[0]);
+
+    console.log(fileList[0]);
+    formData.append('audioFile',fileList[0]);
     
 
     try {
@@ -138,6 +152,15 @@ function Room(props) {
 
       const responseData = await response.json();
       console.log(responseData);
+      if(responseData.updated)
+      {
+        let tempArr = [...toggleAudioIcon];
+        tempArr[trackNum] = !tempArr[trackNum];
+        setToggleAudioIcon(tempArr);
+
+        let sample_descrip = document.querySelector("#add-sample-descrip-"+trackNum);
+        sample_descrip.textContent = fileList[0].name;
+      }
 
     } catch (e) {
       console.error(e);
@@ -223,7 +246,7 @@ function Room(props) {
                   {
                     toggleAudioIcon[trackNum] ? <div className="add-sample" id={"add-sample-"+trackNum} onClick={()=>toggleSampleIcon(trackNum)}>
                       <img className="sample-icon" src={vinyl_svg} alt="sample button"></img>
-                      <div className="add-sample-descrip">Add Sample</div>
+                      <div id={"add-sample-descrip-"+trackNum} className="add-sample-descrip">Add Sample</div>
                     </div> : 
                     <input type="file" className="file-input" accept=".wav,.mp3" onChange={(e)=>loadSample(e,trackNum)}/>
                   }
