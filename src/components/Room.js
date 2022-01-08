@@ -1,5 +1,5 @@
 import '../App.css';
-import {useState,useEffect} from "react";
+import {useState,useEffect, useRef} from "react";
 import history from '../history.js';
 import uniqid from "uniqid";
 
@@ -17,11 +17,13 @@ function Room(props) {
 
   const socket = socketIOClient(ENDPOINT);
   const [roomId,setRoomId] = useState(null);
-  const [grid,setGrid] = useState([]);
-  const [bpm,setBPM] = useState();
+  //const [currentStep,setCurrentStep] = useState(1);
+  const [grid,setGrid] = useState([new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false)]);
+  const [bpm,setBPM] = useState(120);
   const [audioSamples, setAudioSamples] = useState(["","","","","",""]);
   const [audioSampleNames, setAudioSampleNames] = useState(["","","","","",""]);
   const [toggleAudioIcon, setToggleAudioIcon] = useState([true,true,true,true,true,true]);
+  const currentStepRef = useRef(1); 
 
   const initializeRoom = async () => {
     
@@ -101,7 +103,8 @@ function Room(props) {
         body: JSON.stringify({
           roomId:roomId,
           gridArr: tempGrid,
-          audioSamples:audioSamples
+          audioSamples:audioSamples,
+          audioSampleNames:audioSampleNames
         })
       });
 
@@ -198,11 +201,50 @@ function Room(props) {
       //appendMessage(`${name} disconnected`)
     });
     
+
+    let timer = setInterval(() => {
+      console.log(currentStepRef.current);
+
+      clearHighlight();
+      highlightBoxes();
+
+      if(currentStepRef.current + 1 === 33)
+      {
+        currentStepRef.current = 1;
+      }
+      else
+      {
+        currentStepRef.current += 1;
+      }
+    },(60/bpm)*1000);
+
+
+    let clearHighlight = () => {
+      const divsToRemoveHighlight = document.getElementsByClassName('highlighted');
+
+      while(divsToRemoveHighlight.length)
+      {
+        divsToRemoveHighlight[0].classList.remove('highlighted');
+      }
+    };
+
+    let highlightBoxes = () => {
+
+      const divsToHighlight = document.getElementsByClassName('step-'+currentStepRef.current);
+      
+      for(let i=0;i<divsToHighlight.length;i++)
+      {
+        divsToHighlight[i].classList.add('highlighted');
+      }
+    };
+
     setRoomId(props.roomId);
 
-    return () => {
-      socket.disconnect();
-    };
+
+  return () => {
+    clearTimeout(timer);
+    socket.disconnect();
+  };
     
   },[]);
 
@@ -211,14 +253,18 @@ function Room(props) {
     if(roomId !== null)
     {
       initializeRoom();
+
     }
     
   },[roomId]);
 
 
   useEffect(() => {
-  
-    //change setInterval here
+    
+    if(bpm !== null)
+    {
+
+    }
     
   },[bpm]);
 
@@ -275,8 +321,10 @@ function Room(props) {
                         classList.push("fourth")
                       }
 
+                      classList.push('step-'+(index+1));
+
                       return (
-                        <div id={"step-"+index} className={classList.join(" ")} onClick={()=>gridBoxClicked(trackNum,index)} key={uniqid()}></div>
+                        <div className={classList.join(" ")} onClick={()=>gridBoxClicked(trackNum,index)} key={uniqid()}></div>
                       )
                     })
                   }
