@@ -19,8 +19,8 @@ function Room(props) {
   const [roomId,setRoomId] = useState(null);
   const [grid,setGrid] = useState([]);
   const [bpm,setBPM] = useState();
-  const [audioSamples, setAudioSamples] = useState([]);
-  const [audioSampleNames, setAudioSampleNames] = useState([]);
+  const [audioSamples, setAudioSamples] = useState(["","","","","",""]);
+  const [audioSampleNames, setAudioSampleNames] = useState(["","","","","",""]);
   const [toggleAudioIcon, setToggleAudioIcon] = useState([true,true,true,true,true,true]);
 
   const initializeRoom = async () => {
@@ -49,6 +49,8 @@ function Room(props) {
           setGrid(gridArr);
           setAudioSamples(audioArr);
           setAudioSampleNames(audioNameArr);
+
+          console.log(audioNameArr);
         }   
 
     }
@@ -125,8 +127,6 @@ function Room(props) {
     console.log(e.target.files);
     const fileList = e.target.files;
 
-    console.log(fileList);
-
     const formData = new FormData();
     formData.append('roomId',roomId);
     formData.append('instrumentNum',trackNum);
@@ -158,8 +158,13 @@ function Room(props) {
         tempArr[trackNum] = !tempArr[trackNum];
         setToggleAudioIcon(tempArr);
 
-        let sample_descrip = document.querySelector("#add-sample-descrip-"+trackNum);
-        sample_descrip.textContent = fileList[0].name;
+        let tempArr2 = [...audioSampleNames];
+        tempArr2[trackNum] = fileList[0].name;
+        setAudioSampleNames(tempArr2);
+
+
+        //let sample_descrip = document.querySelector("#add-sample-descrip-"+trackNum);
+        //sample_descrip.textContent = fileList[0].name;
       }
 
     } catch (e) {
@@ -246,7 +251,7 @@ function Room(props) {
                   {
                     toggleAudioIcon[trackNum] ? <div className="add-sample" id={"add-sample-"+trackNum} onClick={()=>toggleSampleIcon(trackNum)}>
                       <img className="sample-icon" src={vinyl_svg} alt="sample button"></img>
-                      <div id={"add-sample-descrip-"+trackNum} className="add-sample-descrip">Add Sample</div>
+                      <div id={"add-sample-descrip-"+trackNum} className="add-sample-descrip">{audioSampleNames[trackNum] === null ? "Add Sample" : audioSampleNames[trackNum]}</div>
                     </div> : 
                     <input type="file" className="file-input" accept=".wav,.mp3" onChange={(e)=>loadSample(e,trackNum)}/>
                   }
