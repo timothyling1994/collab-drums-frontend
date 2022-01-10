@@ -19,11 +19,15 @@ function Room(props) {
   const [roomId,setRoomId] = useState(null);
   //const [currentStep,setCurrentStep] = useState(1);
   const [grid,setGrid] = useState([new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false)]);
-  const [bpm,setBPM] = useState(120);
+  const [bpm,setBPM] = useState();
   const [audioSamples, setAudioSamples] = useState(["","","","","",""]);
   const [audioSampleNames, setAudioSampleNames] = useState(["","","","","",""]);
   const [toggleAudioIcon, setToggleAudioIcon] = useState([true,true,true,true,true,true]);
+  const [showInputError, setShowInputError] = useState(false);
+
   const currentStepRef = useRef(1); 
+  const bpmRef = useRef(120);
+  const timerRef = useRef(null);
 
   const initializeRoom = async () => {
     
@@ -65,26 +69,34 @@ function Room(props) {
 
   };
 
-  const bpmChange = async (newBpm) => {
-    setBPM(newBpm);
+  const bpmChange = async (e,newBpm) => {
+  
+    if(newBpm >= 40 && newBpm <= 208)
+    {
+      setBPM(newBpm);
 
-    try {
-      let response = await fetch('http://localhost:8080/update-bpm-settings/',{
-        method: 'POST',
-        headers:{
-          'Content-Type':'application/json'
-        },
-        body: JSON.stringify({
-          roomId:roomId,
-          bpm: newBpm,
-        })
-      });
+      try {
+        let response = await fetch('http://localhost:8080/update-bpm-settings/',{
+          method: 'POST',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body: JSON.stringify({
+            roomId:roomId,
+            bpm: newBpm,
+          })
+        });
 
-      const responseData = await response.json();
-      console.log(responseData);
+        const responseData = await response.json();
+        console.log(responseData);
 
-    } catch (e) {
-      console.error(e);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    else
+    {
+      console.log("pressed");
     }
 
   };
@@ -202,8 +214,43 @@ function Room(props) {
     });
     
 
+
+
+    setRoomId(props.roomId);
+
+
+  return () => {
+    //clearTimeout(timer);
+    socket.disconnect();
+  };
+    
+  },[]);
+
+  useEffect(() => {
+  
+    if(roomId !== null)
+    {
+      initializeRoom();
+
+    }
+    
+  },[roomId]);
+
+
+  useEffect(() => {
+    
+    if(bpm >= 40 && bpm <= 208)
+    {
+      bpmRef.current = bpm;
+    }
+
+    if(timerRef.current !== null)
+    {
+      clearTimeout(timerRef.current);
+    }
+
     let timer = setInterval(() => {
-      console.log(currentStepRef.current);
+      console.log(bpmRef.current);
 
       clearHighlight();
       highlightBoxes();
@@ -216,7 +263,9 @@ function Room(props) {
       {
         currentStepRef.current += 1;
       }
-    },(60/bpm)*1000);
+    },(60/bpmRef.current)*1000);
+
+    timerRef.current = timer;
 
 
     let clearHighlight = () => {
@@ -238,44 +287,23 @@ function Room(props) {
       }
     };
 
-    setRoomId(props.roomId);
-
-
-  return () => {
-    clearTimeout(timer);
-    socket.disconnect();
-  };
-    
-  },[]);
-
-  useEffect(() => {
-  
-    if(roomId !== null)
-    {
-      initializeRoom();
-
-    }
-    
-  },[roomId]);
-
-
-  useEffect(() => {
-    
-    if(bpm !== null)
-    {
-
-    }
+    return () => {
+      clearTimeout(timer);
+    };
     
   },[bpm]);
 
   return (
     <div className="Room">
-      <div id="title" onClick={
-        ()=>{
-          history.push("/home");
-          props.setDisplayRooms(false);
-        }
-      }>Collab Drums</div>
+      <div id="title-container">
+        <div id="title" onClick={
+          ()=>{
+            history.push("/home");
+            props.setDisplayRooms(false);
+          }
+          }>Collab Drums
+        </div>
+      </div>
       <div id="main-container">
         <div id="message-container"></div>
           
@@ -286,8 +314,7 @@ function Room(props) {
             <img className="control-btn" src={play_svg} alt="play button"></img>
             <img className="control-btn" src={pause_svg} alt="pause button"></img>
             <img className="control-btn" src={trash_svg} alt="trash button"></img>
-            <input type="number" id="bpm" value={bpm} onChange={(e)=>bpmChange(e.target.value)}/>
-            
+            <input type="number" id="bpm" min="1" max="208" value={bpm} onChange={(e)=>bpmChange(e, e.target.value)}/>
           </div>
 
           {

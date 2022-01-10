@@ -66,14 +66,16 @@
   text-align: center;
 }
 
-#title{
+#title-container{
   width: 100%;
-  text-align: center;
+  display: flex;
+  justify-content: center;
   font-family: slaytanic, Arial;
   font-size: 5em;
   margin-top: 0.1em;
-
+  margin-bottom: 0.1em;
 }
+
 
 #drum-grid{
   display: flex;
