@@ -17,6 +17,7 @@ const NUM_INSTRUMENTS = 6;
 function Room(props) {
 
   const socket = socketIOClient(ENDPOINT);
+  const [roomURL,setRoomURL] = useState(null);
   const [roomId,setRoomId] = useState(null);
   //const [currentStep,setCurrentStep] = useState(1);
   const [grid,setGrid] = useState(null);
@@ -74,6 +75,9 @@ function Room(props) {
           console.log(audioArr);
           setAudioSamples(audioArr);
           setAudioSampleNames(audioNameArr);
+
+          let currentURL = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.search;
+          setRoomURL(currentURL);
         }   
 
     }
@@ -200,20 +204,17 @@ function Room(props) {
       console.error(e);
     }
 
-    /*    
-    socket.emit("send_audio",{
-      file: fileList[0],
-      roomId: roomId,
-      instrumentNum: trackNum,
-      fileName:fileList[0].name,
-      contentType: fileList[0].type,
-    });*/
 
+  };
 
+  const copyText = () => {
+    navigator.clipboard.writeText(roomURL);
+    let div = document.querySelector('#copy-link-text');
+    div.textContent = "Link copied!";
 
-    //send this file to firebase storage
-    //
-
+    setTimeout(()=>{
+      div.textContent = "Copy link";
+    },2000)
   };
 
   useEffect(() => {
@@ -470,7 +471,15 @@ function Room(props) {
               )
             }) : null
           }
-
+          {
+            roomURL !== null ? 
+            <div id="bottom-container">
+              <div id="copy-link-container">
+                <div id="copy-link-text">Copy link</div> 
+                <div id="copy-link-window" onClick={copyText}>{roomURL}</div>
+              </div> 
+            </div> : null
+          }
 
         </div>
       
