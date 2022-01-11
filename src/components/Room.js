@@ -56,7 +56,14 @@ function Room(props) {
             console.log(track);
             gridArr.push(track.stepArray);
             console.log(track.audioUrl);
-            audioArr.push(new Audio(track.audioURL));
+            if(track.audioURL !== null) 
+            {
+              audioArr.push(new Audio(track.audioURL));
+            }
+            else
+            {
+              audioArr.push(null);
+            }
             audioNameArr.push(track.audioName);
             return true;
           });
@@ -183,10 +190,6 @@ function Room(props) {
         let tempArr2 = [...audioSampleNames];
         tempArr2[trackNum] = fileList[0].name;
         setAudioSampleNames(tempArr2);
-
-
-        //let sample_descrip = document.querySelector("#add-sample-descrip-"+trackNum);
-        //sample_descrip.textContent = fileList[0].name;
       }
 
     } catch (e) {
@@ -227,7 +230,6 @@ function Room(props) {
 
 
   return () => {
-    //clearTimeout(timer);
     socket.disconnect();
   };
     
@@ -260,11 +262,15 @@ function Room(props) {
       }
 
       let timer = setInterval(() => {
-        console.log(bpmRef.current);
+        console.log(currentStepRef.current);
+
 
         clearHighlight();
         highlightBoxes();
         playSounds();
+
+      
+    
 
         //check if grid instrument array is true at current_step
         //find the instruments that are true at that time
@@ -304,37 +310,42 @@ function Room(props) {
       };
 
       const playSounds = () => {
-
-        /*
-        if(grid[0][currentStepRef.current])
+        
+        if(grid[0][currentStepRef.current-1] && audioSamples[0] !== null)
         {
+          audioSamples[0].currentTime = 0;
           audioSamples[0].play();
         }
 
-        if(grid[1][currentStepRef.current])
+        if(grid[1][currentStepRef.current-1] && audioSamples[1] !== null)
         {
+          audioSamples[1].currentTime = 0;
           audioSamples[1].play();
         }
 
-        if(grid[2][currentStepRef.current])
+        if(grid[2][currentStepRef.current-1] && audioSamples[2]!== null)
         {
+          audioSamples[2].currentTime = 0;
           audioSamples[2].play();
         }
 
-        if(grid[3][currentStepRef.current])
+        if(grid[3][currentStepRef.current-1] && audioSamples[3] !== null)
         {
+          audioSamples[3].currentTime = 0;
           audioSamples[3].play();
         }
 
-        if(grid[4][currentStepRef.current])
+        if(grid[4][currentStepRef.current-1] && audioSamples[4] !== null)
         {
+          audioSamples[4].currentTime = 0;
           audioSamples[4].play();
         }
 
-        if(grid[5][currentStepRef.current])
+        if(grid[5][currentStepRef.current-1] && audioSamples[5] !== null)
         {
+          audioSamples[5].currentTime = 0;
           audioSamples[5].play();
-        }*/
+        }
 
       };
     }
@@ -343,7 +354,7 @@ function Room(props) {
       clearTimeout(timerRef.current);
     };
     
-  },[bpm]);
+  },[bpm,grid]);
 
   
   useEffect(() => {
