@@ -35,3 +35,4 @@ Collab Drums is built using React, MongoDB to store room data, Express.js to cre
 
 <img width="1440" alt="Screen Shot 2022-01-11 at 11 03 18 AM" src="https://user-images.githubusercontent.com/6860113/149005471-8d3ef149-4a6d-46d6-959b-4ec090e5f7b9.png">
 
+<img width="1439" alt="Screen Shot 2022-01-11 at 11 07 28 AM" src="https://user-images.githubusercontent.com/6860113/149005747-c8225487-33f9-4c85-84f7-903d14d02832.png">
