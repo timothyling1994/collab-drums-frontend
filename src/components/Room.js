@@ -11,6 +11,7 @@ import trash_svg from '../public/trash.svg';
 import socketIOClient from "socket.io-client";
 
 const ENDPOINT = "http://localhost:8080";
+const NUM_INSTRUMENTS = 6;
 
 
 function Room(props) {
@@ -18,15 +19,22 @@ function Room(props) {
   const socket = socketIOClient(ENDPOINT);
   const [roomId,setRoomId] = useState(null);
   //const [currentStep,setCurrentStep] = useState(1);
-  const [grid,setGrid] = useState([new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false),new Array(32).fill(false)]);
-  const [bpm,setBPM] = useState();
-  const [audioSamples, setAudioSamples] = useState(["","","","","",""]);
-  const [audioSampleNames, setAudioSampleNames] = useState(["","","","","",""]);
+  const [grid,setGrid] = useState(null);
+  
+  const [audioNamesInitComplete, setAudioNamesInitComplete] = useState(false);
+  const [audioInitComplete, setAudioInitComplete] = useState(false);
+  const [gridInitComplete, setGridInitComplete] = useState(false);
+  const [initComplete, setInitComplete] = useState(false);
+  
+  const [bpm,setBPM] = useState(null);
+  const [triggerAudioObj, setTriggerAudioObj] = useState({});
+  const [audioSamples, setAudioSamples] = useState(null);
+  const [audioSampleNames, setAudioSampleNames] = useState(null);
+  
   const [toggleAudioIcon, setToggleAudioIcon] = useState([true,true,true,true,true,true]);
-  const [showInputError, setShowInputError] = useState(false);
 
   const currentStepRef = useRef(1); 
-  const bpmRef = useRef(120);
+  const bpmRef = useRef(null);
   const timerRef = useRef(null);
 
   const initializeRoom = async () => {
@@ -42,21 +50,23 @@ function Room(props) {
 
         console.log(response);
 
-        if(response.room[0].roomData !== null)
+        if(response.roomData[0].roomData !== null)
         {
-          response.room[0].roomData.tracks.map(track=>{
+          response.roomData[0].roomData.tracks.map(track=>{
+            console.log(track);
             gridArr.push(track.stepArray);
-            audioArr.push(track.audioURL);
+            console.log(track.audioUrl);
+            audioArr.push(new Audio(track.audioURL));
             audioNameArr.push(track.audioName);
             return true;
           });
 
-          setBPM(response.room[0].roomData.bpm);
           setGrid(gridArr);
+          bpmRef.current = response.roomData[0].roomData.bpm;
+          //setBPM(response.room[0].roomData.bpm);
+          console.log(audioArr);
           setAudioSamples(audioArr);
           setAudioSampleNames(audioNameArr);
-
-          console.log(audioNameArr);
         }   
 
     }
@@ -94,17 +104,15 @@ function Room(props) {
         console.error(e);
       }
     }
-    else
-    {
-      console.log("pressed");
-    }
-
   };
 
   const gridBoxClicked = async (trackNum,index) => {
+
     let tempGrid = [...grid];
     tempGrid[trackNum][index] = !tempGrid[trackNum][index];
     setGrid(tempGrid);
+
+    console.log(tempGrid);
 
     try {
       let response = await fetch('http://localhost:8080/update-room-settings/',{
@@ -115,8 +123,7 @@ function Room(props) {
         body: JSON.stringify({
           roomId:roomId,
           gridArr: tempGrid,
-          audioSamples:audioSamples,
-          audioSampleNames:audioSampleNames
+          trackNum: trackNum,
         })
       });
 
@@ -239,59 +246,146 @@ function Room(props) {
 
   useEffect(() => {
     
-    if(bpm >= 40 && bpm <= 208)
+
+    if(bpm !== null)
     {
-      bpmRef.current = bpm;
+      if(bpm >= 40 && bpm <= 208)
+      {
+        bpmRef.current = bpm;
+      }
+
+      if(timerRef.current !== null)
+      {
+        clearTimeout(timerRef.current);
+      }
+
+      let timer = setInterval(() => {
+        console.log(bpmRef.current);
+
+        clearHighlight();
+        highlightBoxes();
+        playSounds();
+
+        //check if grid instrument array is true at current_step
+        //find the instruments that are true at that time
+        //use that index to access audioSamples array
+        //play audio using audio URI
+
+        if(currentStepRef.current + 1 === 33)
+        {
+          currentStepRef.current = 1;
+        }
+        else
+        {
+          currentStepRef.current += 1;
+        }
+      },(60/bpmRef.current)*1000);
+
+      timerRef.current = timer;
+
+
+      const clearHighlight = () => {
+        const divsToRemoveHighlight = document.getElementsByClassName('highlighted');
+
+        while(divsToRemoveHighlight.length)
+        {
+          divsToRemoveHighlight[0].classList.remove('highlighted');
+        }
+      };
+
+      const highlightBoxes = () => {
+
+        const divsToHighlight = document.getElementsByClassName('step-'+currentStepRef.current);
+        
+        for(let i=0;i<divsToHighlight.length;i++)
+        {
+          divsToHighlight[i].classList.add('highlighted');
+        }
+      };
+
+      const playSounds = () => {
+
+        /*
+        if(grid[0][currentStepRef.current])
+        {
+          audioSamples[0].play();
+        }
+
+        if(grid[1][currentStepRef.current])
+        {
+          audioSamples[1].play();
+        }
+
+        if(grid[2][currentStepRef.current])
+        {
+          audioSamples[2].play();
+        }
+
+        if(grid[3][currentStepRef.current])
+        {
+          audioSamples[3].play();
+        }
+
+        if(grid[4][currentStepRef.current])
+        {
+          audioSamples[4].play();
+        }
+
+        if(grid[5][currentStepRef.current])
+        {
+          audioSamples[5].play();
+        }*/
+
+      };
     }
-
-    if(timerRef.current !== null)
-    {
-      clearTimeout(timerRef.current);
-    }
-
-    let timer = setInterval(() => {
-      console.log(bpmRef.current);
-
-      clearHighlight();
-      highlightBoxes();
-
-      if(currentStepRef.current + 1 === 33)
-      {
-        currentStepRef.current = 1;
-      }
-      else
-      {
-        currentStepRef.current += 1;
-      }
-    },(60/bpmRef.current)*1000);
-
-    timerRef.current = timer;
-
-
-    let clearHighlight = () => {
-      const divsToRemoveHighlight = document.getElementsByClassName('highlighted');
-
-      while(divsToRemoveHighlight.length)
-      {
-        divsToRemoveHighlight[0].classList.remove('highlighted');
-      }
-    };
-
-    let highlightBoxes = () => {
-
-      const divsToHighlight = document.getElementsByClassName('step-'+currentStepRef.current);
-      
-      for(let i=0;i<divsToHighlight.length;i++)
-      {
-        divsToHighlight[i].classList.add('highlighted');
-      }
-    };
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(timerRef.current);
     };
     
   },[bpm]);
+
+  
+  useEffect(() => {
+
+    if(grid !== null)
+    {
+      setGridInitComplete(true);
+    }
+  },[grid]);
+
+  useEffect(() => {
+    
+    if(audioSamples !== null)
+    {
+      console.log(audioSamples);
+      setAudioInitComplete(true);
+    }
+  },[audioSamples]);
+
+  useEffect(() => {
+    
+    if(audioSampleNames !== null)
+    {
+      setAudioNamesInitComplete(true);
+    }
+  },[audioSampleNames]);
+
+  //setBPM(bpmRef.current);
+
+  useEffect(() => {
+
+    if(gridInitComplete && audioNamesInitComplete && audioInitComplete)
+    {
+      setInitComplete(true);
+    }
+
+  },[gridInitComplete, audioNamesInitComplete, audioInitComplete]);
+
+  useEffect(() => {
+    
+    setBPM(bpmRef.current);
+  },[initComplete]);
 
   return (
     <div className="Room">
@@ -314,17 +408,18 @@ function Room(props) {
             <img className="control-btn" src={play_svg} alt="play button"></img>
             <img className="control-btn" src={pause_svg} alt="pause button"></img>
             <img className="control-btn" src={trash_svg} alt="trash button"></img>
-            <input type="number" id="bpm" min="1" max="208" value={bpm} onChange={(e)=>bpmChange(e, e.target.value)}/>
+            <input type="number" id="bpm" min="1" max="208" value={bpm !== null ? bpm : null} onChange={(e)=>bpmChange(e, e.target.value)}/>
           </div>
 
           {
+            gridInitComplete ? 
             grid.map((track,trackNum)=>{
               return (
                 <div className="instrument" id={"instrument-"+trackNum} key={uniqid()}>
                   {
                     toggleAudioIcon[trackNum] ? <div className="add-sample" id={"add-sample-"+trackNum} onClick={()=>toggleSampleIcon(trackNum)}>
                       <img className="sample-icon" src={vinyl_svg} alt="sample button"></img>
-                      <div id={"add-sample-descrip-"+trackNum} className="add-sample-descrip">{audioSampleNames[trackNum] === null ? "Add Sample" : audioSampleNames[trackNum]}</div>
+                      { audioNamesInitComplete ? <div id={"add-sample-descrip-"+trackNum} className="add-sample-descrip">{audioSampleNames[trackNum] === null ? "Add Sample" : audioSampleNames[trackNum]}</div> : null }
                     </div> : 
                     <input type="file" className="file-input" accept=".wav,.mp3" onChange={(e)=>loadSample(e,trackNum)}/>
                   }
@@ -358,7 +453,7 @@ function Room(props) {
 
                 </div>
               )
-            })
+            }) : null
           }
 
 
