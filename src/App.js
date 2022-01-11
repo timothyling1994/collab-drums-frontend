@@ -118,9 +118,7 @@ function App() {
                     <button className="main-btn" onClick={createPublicRoom}>Create Public Room</button>
                   </div>
                   <div id="create-private-room">
-                    <form action="/create-private-room" method="POST">
-                      <button className="main-btn" type="submit">Create Private Room</button>
-                    </form>
+                    <button className="main-btn" onClick={createPrivateRoom}>Create Private Room</button>
                   </div>
                 </div>  
               }

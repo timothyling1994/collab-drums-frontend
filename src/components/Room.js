@@ -190,6 +190,10 @@ function Room(props) {
         let tempArr2 = [...audioSampleNames];
         tempArr2[trackNum] = fileList[0].name;
         setAudioSampleNames(tempArr2);
+
+        let tempArr3 = [...audioSamples];
+        tempArr3[trackNum] = new Audio(responseData.downloadURL);
+        setAudioSamples(tempArr3);
       }
 
     } catch (e) {
