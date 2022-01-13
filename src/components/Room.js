@@ -10,7 +10,7 @@ import trash_svg from '../public/trash.svg';
 
 import socketIOClient from "socket.io-client";
 
-const ENDPOINT = "http://localhost:3000";
+const ENDPOINT = "https://collab-drums.netlify.app/";
 
 
 function Room(props) {
@@ -46,7 +46,8 @@ function Room(props) {
       setBPM(newBpm);
 
       try {
-        let response = await fetch('http://localhost:8080/update-bpm-settings/',{
+        //let response = await fetch('http://localhost:8080/update-bpm-settings/',{
+        let response = await fetch('https://collab-drums-backend.herokuapp.com/update-bpm-settings/',{
           method: 'POST',
           headers:{
             'Content-Type':'application/json'
@@ -72,7 +73,8 @@ function Room(props) {
     setGrid(tempGrid);
 
     try {
-      let response = await fetch('http://localhost:8080/update-room-settings/',{
+      let response = await fetch('https://collab-drums-backend.herokuapp.com/update-room-settings/',{
+      //let response = await fetch('http://localhost:8080/update-room-settings/',{
         method: 'POST',
         headers:{
           'Content-Type':'application/json'
@@ -114,13 +116,14 @@ function Room(props) {
     
 
     try {
-      let response = await fetch('http://localhost:8080/update-audio-settings/',
+      let response = await fetch('https://collab-drums-backend.herokuapp.com/update-audio-settings/',
+      //let response = await fetch('http://localhost:8080/update-audio-settings/',
       {
         method: 'POST',
         mode:'cors',
         headers:{
           'Accept':'application/json',
-          'Origin':'http://localhost:3000/room/1gtirs1ziaky0hpww2',
+          'Origin':'https://collab-drums.netlify.app/room/'+roomId,
 
         },
         body: formData,
@@ -184,7 +187,8 @@ function Room(props) {
     
         try {
             console.log(roomId);
-            let response = await fetch('http://localhost:8080/initialize-room/'+roomId);
+            let response = await fetch('https://collab-drums-backend.herokuapp.com/initialize-room/'+roomId);
+            //let response = await fetch('http://localhost:8080/initialize-room/'+roomId);
             response = await response.json();
 
             let gridArr = [];

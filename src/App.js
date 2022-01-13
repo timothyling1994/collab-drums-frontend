@@ -19,7 +19,8 @@ function App() {
 
   const checkIfValidRoom = async (roomId) => {
     try {
-        let response = await fetch('http://localhost:8080/room/'+roomId);
+        //let response = await fetch('http://localhost:8080/room/'+roomId);
+        let response = await fetch('https://collab-drums-backend.herokuapp.com/room/'+roomId);
         response = await response.json();
         return response.isValid;
     }
@@ -31,7 +32,8 @@ function App() {
 
   const createPublicRoom = async () => {
     try {
-        let response = await fetch('http://localhost:8080/create-public-room',{
+        //let response = await fetch('http://localhost:8080/create-public-room',{
+        let response = await fetch('https://collab-drums-backend.herokuapp.com/create-public-room',{
           method: 'POST',
           mode: 'cors',
           headers: {
@@ -50,7 +52,8 @@ function App() {
 
   const createPrivateRoom = async () => {
     try {
-        let response = await fetch('http://localhost:8080/create-private-room',{
+        //let response = await fetch('http://localhost:8080/create-private-room',{
+        let response = await fetch('https://collab-drums-backend.herokuapp.com/create-private-room',{
           method: 'POST',
           mode: 'cors',
           headers: {
@@ -72,7 +75,8 @@ function App() {
     (async () => {
       
       try{
-        let response = await fetch('http://localhost:8080/display-public-rooms');
+        //let response = await fetch('http://localhost:8080/display-public-rooms');
+        let response = await fetch('https://collab-drums-backend.herokuapp.com/display-public-rooms');
         response = await response.json();
         setRoomList(response.rooms);
 
