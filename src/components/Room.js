@@ -18,6 +18,8 @@ function Room(props) {
   const socket = socketIOClient(ENDPOINT);
   const [roomURL,setRoomURL] = useState(null);
   const [roomId,setRoomId] = useState(null);
+
+  const propsRoomId = props.roomId;
   //const [currentStep,setCurrentStep] = useState(1);
   const [grid,setGrid] = useState(null);
   
@@ -27,7 +29,6 @@ function Room(props) {
   const [initComplete, setInitComplete] = useState(false);
   
   const [bpm,setBPM] = useState(null);
-  const [triggerAudioObj, setTriggerAudioObj] = useState({});
   const [audioSamples, setAudioSamples] = useState(null);
   const [audioSampleNames, setAudioSampleNames] = useState(null);
   
@@ -37,53 +38,6 @@ function Room(props) {
   const bpmRef = useRef(null);
   const timerRef = useRef(null);
 
-  const initializeRoom = async () => {
-    
-    try {
-        console.log(roomId);
-        let response = await fetch('http://localhost:8080/initialize-room/'+roomId);
-        response = await response.json();
-
-        let gridArr = [];
-        let audioArr = [];
-        let audioNameArr = [];
-
-
-        if(response.roomData[0].roomData !== null)
-        {
-          response.roomData[0].roomData.tracks.map(track=>{
-            
-            gridArr.push(track.stepArray);
-            
-            if(track.audioURL !== null) 
-            {
-              audioArr.push(new Audio(track.audioURL));
-            }
-            else
-            {
-              audioArr.push(null);
-            }
-            audioNameArr.push(track.audioName);
-            return true;
-          });
-
-          setGrid(gridArr);
-          bpmRef.current = response.roomData[0].roomData.bpm;      
-          setAudioSamples(audioArr);
-          setAudioSampleNames(audioNameArr);
-
-          let currentURL = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.search;
-          setRoomURL(currentURL);
-
-
-        }   
-
-    }
-    catch(e){
-      console.error(e);
-    }
-
-  };
 
   const bpmChange = async (e,newBpm) => {
   
@@ -103,7 +57,7 @@ function Room(props) {
           })
         });
 
-        const responseData = await response.json();
+        await response.json();
 
       } catch (e) {
         console.error(e);
@@ -130,7 +84,7 @@ function Room(props) {
         })
       });
 
-      const responseData = await response.json();
+      await response.json();
 
     } catch (e) {
       console.error(e);
@@ -215,20 +169,64 @@ function Room(props) {
     socket.on('user-disconnected', name => {
       console.log('user disconnected:'+name);
     });
+  
+    setRoomId(propsRoomId);
+
+    return () => {
+      socket.disconnect();
+    };
     
-
-
-
-    setRoomId(props.roomId);
-
-
-  return () => {
-    socket.disconnect();
-  };
-    
-  },[]);
+  },[propsRoomId,socket]);
 
   useEffect(() => {
+
+      const initializeRoom = async () => {
+    
+        try {
+            console.log(roomId);
+            let response = await fetch('http://localhost:8080/initialize-room/'+roomId);
+            response = await response.json();
+
+            let gridArr = [];
+            let audioArr = [];
+            let audioNameArr = [];
+
+
+            if(response.roomData[0].roomData !== null)
+            {
+              response.roomData[0].roomData.tracks.map(track=>{
+                
+                gridArr.push(track.stepArray);
+                
+                if(track.audioURL !== null) 
+                {
+                  audioArr.push(new Audio(track.audioURL));
+                }
+                else
+                {
+                  audioArr.push(null);
+                }
+                audioNameArr.push(track.audioName);
+                return true;
+              });
+
+              setGrid(gridArr);
+              bpmRef.current = response.roomData[0].roomData.bpm;      
+              setAudioSamples(audioArr);
+              setAudioSampleNames(audioNameArr);
+
+              let currentURL = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.search;
+              setRoomURL(currentURL);
+
+
+            }   
+
+        }
+        catch(e){
+          console.error(e);
+        }
+
+      };
   
     if(roomId !== null)
     {
@@ -337,7 +335,7 @@ function Room(props) {
       clearTimeout(timerRef.current);
     };
     
-  },[bpm,grid]);
+  },[bpm,grid,audioSamples]);
 
   
   useEffect(() => {
@@ -372,7 +370,7 @@ function Room(props) {
       socket.emit('joining-room',roomId);
     }
 
-  },[gridInitComplete, audioNamesInitComplete, audioInitComplete]);
+  },[gridInitComplete, audioNamesInitComplete, audioInitComplete, roomId, socket]);
 
   useEffect(() => {
     

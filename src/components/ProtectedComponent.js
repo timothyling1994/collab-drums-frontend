@@ -6,21 +6,25 @@ import NotValidRoom from "./NotValidRoom.js";
 
 
 
-
 function ProtectedComponent(props) {
 
   const [isValid, setIsValid] = useState(true);
+  const {checkIfValidRoom} = props;
+  const id = props.match.params.id;
 
   useEffect(()=>{
 
     async function checkIfValid () {
-      let result = await props.checkIfValidRoom(props.match.params.id);
+      console.log(id);
+      let result = await checkIfValidRoom(id);
       setIsValid(result);
     };
 
+
     checkIfValid();
+
     
-  },[]);
+  },[checkIfValidRoom,id]);
 
   return (
 
