@@ -1,5 +1,7 @@
 **Brief Description:**
 
+https://collab-drums.netlify.app/
+
 Collab Drums is a music web app where users can create rooms and make drum patterns with others in real-time. Users can upload audio samples to cloud storage, click in when they want audio samples to play, and broadcast these changes to all users within that public or private room. 
 
 <img width="1440" alt="Screen Shot 2022-01-11 at 11 02 45 AM" src="https://user-images.githubusercontent.com/6860113/149005398-959a4ee3-c44a-4d33-8855-016d8376dfad.png">
