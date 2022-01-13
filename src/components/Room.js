@@ -10,8 +10,7 @@ import trash_svg from '../public/trash.svg';
 
 import socketIOClient from "socket.io-client";
 
-const ENDPOINT = "http://localhost:8080";
-const NUM_INSTRUMENTS = 6;
+const ENDPOINT = "http://localhost:3000";
 
 
 function Room(props) {
@@ -49,14 +48,13 @@ function Room(props) {
         let audioArr = [];
         let audioNameArr = [];
 
-        console.log(response);
 
         if(response.roomData[0].roomData !== null)
         {
           response.roomData[0].roomData.tracks.map(track=>{
-            console.log(track);
+            
             gridArr.push(track.stepArray);
-            console.log(track.audioUrl);
+            
             if(track.audioURL !== null) 
             {
               audioArr.push(new Audio(track.audioURL));
@@ -70,23 +68,20 @@ function Room(props) {
           });
 
           setGrid(gridArr);
-          bpmRef.current = response.roomData[0].roomData.bpm;
-          //setBPM(response.room[0].roomData.bpm);
-          console.log(audioArr);
+          bpmRef.current = response.roomData[0].roomData.bpm;      
           setAudioSamples(audioArr);
           setAudioSampleNames(audioNameArr);
 
           let currentURL = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.search;
           setRoomURL(currentURL);
+
+
         }   
 
     }
     catch(e){
       console.error(e);
     }
-    //get room data from mongoDB
-    //initialize the audio samples from firebase
-    //
 
   };
 
@@ -109,7 +104,6 @@ function Room(props) {
         });
 
         const responseData = await response.json();
-        console.log(responseData);
 
       } catch (e) {
         console.error(e);
@@ -122,8 +116,6 @@ function Room(props) {
     let tempGrid = [...grid];
     tempGrid[trackNum][index] = !tempGrid[trackNum][index];
     setGrid(tempGrid);
-
-    console.log(tempGrid);
 
     try {
       let response = await fetch('http://localhost:8080/update-room-settings/',{
@@ -139,7 +131,6 @@ function Room(props) {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
 
     } catch (e) {
       console.error(e);
@@ -157,7 +148,6 @@ function Room(props) {
 
   const loadSample = async (e,trackNum) => {
 
-    console.log(e.target.files);
     const fileList = e.target.files;
 
     const formData = new FormData();
@@ -166,7 +156,6 @@ function Room(props) {
     formData.append('fileName',fileList[0].name);
     formData.append('contentType',fileList[0].type);
 
-    console.log(fileList[0]);
     formData.append('audioFile',fileList[0]);
     
 
@@ -184,7 +173,7 @@ function Room(props) {
       });
 
       const responseData = await response.json();
-      console.log(responseData);
+    
       if(responseData.updated)
       {
         let tempArr = [...toggleAudioIcon];
@@ -219,13 +208,12 @@ function Room(props) {
 
   useEffect(() => {
     
-    socket.on('user-connected', name => {
-      console.log('user connected:'+name);
+    socket.on('user-connected', () => {
+      console.log('a user connected');
     });
 
     socket.on('user-disconnected', name => {
       console.log('user disconnected:'+name);
-      //appendMessage(`${name} disconnected`)
     });
     
 
@@ -267,20 +255,10 @@ function Room(props) {
       }
 
       let timer = setInterval(() => {
-        console.log(currentStepRef.current);
-
 
         clearHighlight();
         highlightBoxes();
         playSounds();
-
-      
-    
-
-        //check if grid instrument array is true at current_step
-        //find the instruments that are true at that time
-        //use that index to access audioSamples array
-        //play audio using audio URI
 
         if(currentStepRef.current + 1 === 33)
         {
@@ -374,7 +352,6 @@ function Room(props) {
     
     if(audioSamples !== null)
     {
-      console.log(audioSamples);
       setAudioInitComplete(true);
     }
   },[audioSamples]);
@@ -387,13 +364,12 @@ function Room(props) {
     }
   },[audioSampleNames]);
 
-  //setBPM(bpmRef.current);
-
   useEffect(() => {
 
     if(gridInitComplete && audioNamesInitComplete && audioInitComplete)
     {
       setInitComplete(true);
+      socket.emit('joining-room',roomId);
     }
 
   },[gridInitComplete, audioNamesInitComplete, audioInitComplete]);
@@ -405,8 +381,8 @@ function Room(props) {
 
   return (
     <div className="Room">
-      <div id="title-container">
-        <div id="title" onClick={
+      <div id="room-title-container">
+        <div id="room-title" onClick={
           ()=>{
             history.push("/home");
             props.setDisplayRooms(false);
@@ -424,7 +400,7 @@ function Room(props) {
             <img className="control-btn" src={play_svg} alt="play button"></img>
             <img className="control-btn" src={pause_svg} alt="pause button"></img>
             <img className="control-btn" src={trash_svg} alt="trash button"></img>
-            <input type="number" id="bpm" min="1" max="208" value={bpm !== null ? bpm : null} onChange={(e)=>bpmChange(e, e.target.value)}/>
+            <input type="number" id="bpm" min="40" max="208" value={bpm !== null ? bpm : ""} onChange={(e)=>bpmChange(e, e.target.value)}/>
           </div>
 
           {

@@ -93,19 +93,26 @@ function App() {
       <Router history={history}>
         <Switch>
           <Route exact path="/home">
-              <div id="main-container-title" onClick={
-                ()=>
-                {
-                  history.push("/home");
-                  setDisplayRooms(false);
-                } 
+              <div id="main-container-title">
+                <div id="title" onClick={
+                  ()=>
+                  {
+                    history.push("/home");
+                    setDisplayRooms(false);
+                  } 
 
-              }>Collab Drums</div>
+                }>Collab Drums</div>
+              </div>
+              <div id = "home-page-options">
               {
                 displayRooms ? <div id="public-room-container">
                     {
                       roomList.map(function(room){
-                        return (<div className="roomList" key={uniqid()} onClick={()=>history.push("/room/"+room.roomId)}>Join {room.roomId}</div>)
+                        return (
+                          <div className="roomList-container">
+                            <div className="roomList" key={uniqid()} onClick={()=>history.push("/room/"+room.roomId)}>Join {room.roomId}</div>
+                          </div>
+                          )
                       })
                     }
                 </div> : 
@@ -122,6 +129,7 @@ function App() {
                   </div>
                 </div>  
               }
+              </div>
           </Route>
 
           <Route path="/room/:id" render={(props) => 
