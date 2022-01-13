@@ -386,7 +386,7 @@ function Room(props) {
       <div id="room-title-container">
         <div id="room-title" onClick={
           ()=>{
-            history.push("/home");
+            history.push("/");
             props.setDisplayRooms(false);
           }
           }>Collab Drums

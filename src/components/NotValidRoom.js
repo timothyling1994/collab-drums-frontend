@@ -10,7 +10,7 @@ function NotValidRoom(props) {
 
     <div className="NotValidRoom">
       <div id="room-title-container">
-        <div id="room-title" onClick={()=>history.push("/home")}>Collab Drums</div>
+        <div id="room-title" onClick={()=>history.push("/")}>Collab Drums</div>
         </div>
       <div id="error-container">
         <div id="error-msg">Not a valid room</div> 

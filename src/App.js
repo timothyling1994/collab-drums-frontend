@@ -101,7 +101,7 @@ function App() {
                 <div id="title" onClick={
                   ()=>
                   {
-                    history.push("/home");
+                    history.push("/");
                     setDisplayRooms(false);
                   } 
 
@@ -139,7 +139,7 @@ function App() {
           <Route path="/room/:id" render={(props) => 
               <ProtectedComponent
                 checkIfValidRoom={checkIfValidRoom}
-                redirect='/home'
+                redirect='/'
                 history={history}
                 setDisplayRooms={setDisplayRooms}
                 {...props}
