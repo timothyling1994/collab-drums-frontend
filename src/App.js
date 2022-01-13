@@ -96,7 +96,7 @@ function App() {
       
       <Router history={history}>
         <Switch>
-          <Route exact path="/home">
+          <Route exact path="/">
               <div id="main-container-title">
                 <div id="title" onClick={
                   ()=>
