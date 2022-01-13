@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/collab-drums-frontend/static/css/main.814cfe39.chunk.css",
+    "main.js": "/collab-drums-frontend/static/js/main.f830a078.chunk.js",
+    "main.js.map": "/collab-drums-frontend/static/js/main.f830a078.chunk.js.map",
+    "runtime-main.js": "/collab-drums-frontend/static/js/runtime-main.c66b2814.js",
+    "runtime-main.js.map": "/collab-drums-frontend/static/js/runtime-main.c66b2814.js.map",
+    "static/js/2.0652be5a.chunk.js": "/collab-drums-frontend/static/js/2.0652be5a.chunk.js",
+    "static/js/2.0652be5a.chunk.js.map": "/collab-drums-frontend/static/js/2.0652be5a.chunk.js.map",
+    "index.html": "/collab-drums-frontend/index.html",
+    "static/css/main.814cfe39.chunk.css.map": "/collab-drums-frontend/static/css/main.814cfe39.chunk.css.map",
+    "static/js/2.0652be5a.chunk.js.LICENSE.txt": "/collab-drums-frontend/static/js/2.0652be5a.chunk.js.LICENSE.txt",
+    "static/media/pause.a4c7de09.svg": "/collab-drums-frontend/static/media/pause.a4c7de09.svg",
+    "static/media/play.43b34e85.svg": "/collab-drums-frontend/static/media/play.43b34e85.svg",
+    "static/media/trash.8edb7a59.svg": "/collab-drums-frontend/static/media/trash.8edb7a59.svg",
+    "static/media/vinyl.4eb661fa.svg": "/collab-drums-frontend/static/media/vinyl.4eb661fa.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c66b2814.js",
+    "static/js/2.0652be5a.chunk.js",
+    "static/css/main.814cfe39.chunk.css",
+    "static/js/main.f830a078.chunk.js"
+  ]
+}
