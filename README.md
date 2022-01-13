@@ -1,70 +1,38 @@
-# Getting Started with Create React App
+**Brief Description:**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Collab Drums is a music web app where users can create rooms and make drum patterns with others in real-time. Users can upload audio samples to cloud storage, click in when they want audio samples to play, and broadcast these changes to all users within that public or private room. 
 
-## Available Scripts
+<img width="1440" alt="Screen Shot 2022-01-11 at 11 02 45 AM" src="https://user-images.githubusercontent.com/6860113/149005398-959a4ee3-c44a-4d33-8855-016d8376dfad.png">
 
-In the project directory, you can run:
 
-### `npm start`
+**Why I built it:**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Due to COVID, many musicians weren't able to collaborate physically. I wanted to create a solution that alowed them to do so virtually.  
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
+**About the tech stack:**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Collab Drums is built using React, MongoDB to store room data, Express.js to create API server and processing of requests, Firebase Cloud Storage to store audio samples, and Sockets.io for client-to-server and server-to-client communication to broadcast changes to users within the same room.  
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Features:**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1) Create public and private rooms
+2) Adjustable BPM tempo
+3) Upload audio samples and store them in cloud storage
+4) Broadcast when a user uploads a new audio sample or modifies the drum pattern
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Future Features:**
 
-### `npm run eject`
+1) Export as wav file
+2) Export as MIDI
+3) Pitch audio samples
+4) Adjust loudness of audio samples 
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+**Demo:**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+<img width="1440" alt="Screen Shot 2022-01-11 at 11 02 58 AM" src="https://user-images.githubusercontent.com/6860113/149005444-1064a2fa-45ff-4a52-8366-4ddd6ea893ed.png">
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+<img width="1440" alt="Screen Shot 2022-01-11 at 11 03 18 AM" src="https://user-images.githubusercontent.com/6860113/149005471-8d3ef149-4a6d-46d6-959b-4ec090e5f7b9.png">
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<img width="1439" alt="Screen Shot 2022-01-11 at 11 07 28 AM" src="https://user-images.githubusercontent.com/6860113/149005747-c8225487-33f9-4c85-84f7-903d14d02832.png">
