@@ -10,17 +10,17 @@ import trash_svg from '../public/trash.svg';
 
 import socketIOClient from "socket.io-client";
 
-const ENDPOINT = "https://collab-drums.netlify.app/";
+//const ENDPOINT = "https://collab-drums.netlify.app/";
 
+const ENDPOINT = "http://localhost:8080";
 
 function Room(props) {
 
-  const socket = socketIOClient(ENDPOINT);
+  //const socket = socketIOClient(ENDPOINT);
   const [roomURL,setRoomURL] = useState(null);
   const [roomId,setRoomId] = useState(null);
 
   const propsRoomId = props.roomId;
-  //const [currentStep,setCurrentStep] = useState(1);
   const [grid,setGrid] = useState(null);
   
   const [audioNamesInitComplete, setAudioNamesInitComplete] = useState(false);
@@ -34,9 +34,12 @@ function Room(props) {
   
   const [toggleAudioIcon, setToggleAudioIcon] = useState([true,true,true,true,true,true]);
 
+  const [play, setPlay] = useState(false);
   const currentStepRef = useRef(1); 
   const bpmRef = useRef(null);
   const timerRef = useRef(null);
+
+  const [testMsg,setTestMsg] = useState("test"); 
 
 
   const bpmChange = async (e,newBpm) => {
@@ -46,8 +49,8 @@ function Room(props) {
       setBPM(newBpm);
 
       try {
-        //let response = await fetch('http://localhost:8080/update-bpm-settings/',{
-        let response = await fetch('https://collab-drums-backend.herokuapp.com/update-bpm-settings/',{
+        let response = await fetch('http://localhost:8080/update-bpm-settings/',{
+        //let response = await fetch('https://collab-drums-backend.herokuapp.com/update-bpm-settings/',{
           method: 'POST',
           headers:{
             'Content-Type':'application/json'
@@ -73,8 +76,8 @@ function Room(props) {
     setGrid(tempGrid);
 
     try {
-      let response = await fetch('https://collab-drums-backend.herokuapp.com/update-room-settings/',{
-      //let response = await fetch('http://localhost:8080/update-room-settings/',{
+      //let response = await fetch('https://collab-drums-backend.herokuapp.com/update-room-settings/',{
+      let response = await fetch('http://localhost:8080/update-room-settings/',{
         method: 'POST',
         headers:{
           'Content-Type':'application/json'
@@ -116,15 +119,15 @@ function Room(props) {
     
 
     try {
-      let response = await fetch('https://collab-drums-backend.herokuapp.com/update-audio-settings/',
-      //let response = await fetch('http://localhost:8080/update-audio-settings/',
+      //let response = await fetch('https://collab-drums-backend.herokuapp.com/update-audio-settings/',
+      let response = await fetch('http://localhost:8080/update-audio-settings/',
       {
         method: 'POST',
         mode:'cors',
         headers:{
           'Accept':'application/json',
-          'Origin':'https://collab-drums.netlify.app/room/'+roomId,
-
+          //'Origin':'https://collab-drums.netlify.app/room/'+roomId,
+          'Origin':'http://localhost:8080/room/'+roomId,
         },
         body: formData,
       });
@@ -163,23 +166,54 @@ function Room(props) {
     },2000)
   };
 
-  useEffect(() => {
-    
+  const startPlay = () => {
+    setPlay(true);
+  };  
+
+  const pausePlay = () => {
+    clearTimeout(timerRef.current);
+    setPlay(false);
+  };
+
+  useEffect(()=>{
+    const socket = socketIOClient(ENDPOINT);
+
+    console.log("joining-room-pre");
+    socket.emit('joining-room', props.roomId);
+    console.log("joining-room-post");
+
+
     socket.on('user-connected', () => {
       console.log('a user connected');
+      setTestMsg("user-connected");
     });
 
     socket.on('user-disconnected', name => {
       console.log('user disconnected:'+name);
     });
-  
-    setRoomId(propsRoomId);
 
     return () => {
       socket.disconnect();
     };
+
+  },[]);
+
+  useEffect(() => {
     
-  },[propsRoomId,socket]);
+    /*
+    socket.on('user-connected', () => {
+      console.log('a user connected');
+      setTestMsg("user-connected");
+    });
+
+    socket.on('user-disconnected', name => {
+      console.log('user disconnected:'+name);
+    });
+    */
+  
+    setRoomId(propsRoomId);
+    
+  },[propsRoomId]);
 
   useEffect(() => {
 
@@ -187,8 +221,8 @@ function Room(props) {
     
         try {
             console.log(roomId);
-            let response = await fetch('https://collab-drums-backend.herokuapp.com/initialize-room/'+roomId);
-            //let response = await fetch('http://localhost:8080/initialize-room/'+roomId);
+            //let response = await fetch('https://collab-drums-backend.herokuapp.com/initialize-room/'+roomId);
+            let response = await fetch('http://localhost:8080/initialize-room/'+roomId);
             response = await response.json();
 
             let gridArr = [];
@@ -242,9 +276,8 @@ function Room(props) {
 
 
   useEffect(() => {
-    
 
-    if(bpm !== null)
+    if(bpm !== null && play)
     {
       if(bpm >= 40 && bpm <= 208)
       {
@@ -278,6 +311,7 @@ function Room(props) {
       const clearHighlight = () => {
         const divsToRemoveHighlight = document.getElementsByClassName('highlighted');
 
+        console.log("last");
         while(divsToRemoveHighlight.length)
         {
           divsToRemoveHighlight[0].classList.remove('highlighted');
@@ -300,6 +334,7 @@ function Room(props) {
         {
           audioSamples[0].currentTime = 0;
           audioSamples[0].play();
+        
         }
 
         if(grid[1][currentStepRef.current-1] && audioSamples[1] !== null)
@@ -339,7 +374,7 @@ function Room(props) {
       clearTimeout(timerRef.current);
     };
     
-  },[bpm,grid,audioSamples]);
+  },[bpm,grid,audioSamples,play]);
 
   
   useEffect(() => {
@@ -371,10 +406,10 @@ function Room(props) {
     if(gridInitComplete && audioNamesInitComplete && audioInitComplete)
     {
       setInitComplete(true);
-      socket.emit('joining-room',roomId);
+      //socket.emit('joining-room',roomId);
     }
 
-  },[gridInitComplete, audioNamesInitComplete, audioInitComplete, roomId, socket]);
+  },[gridInitComplete, audioNamesInitComplete, audioInitComplete, roomId]); //socket
 
   useEffect(() => {
     
@@ -392,16 +427,16 @@ function Room(props) {
           }>Collab Drums
         </div>
       </div>
+
       <div id="main-container">
         <div id="message-container"></div>
-          
+      
         </div>
 
         <div id="drum-grid">
           <div id="control-panel">
-            <img className="control-btn" src={play_svg} alt="play button"></img>
-            <img className="control-btn" src={pause_svg} alt="pause button"></img>
-            <img className="control-btn" src={trash_svg} alt="trash button"></img>
+            <img className="control-btn" src={play_svg} alt="play button" onClick={startPlay}></img>
+            <img className="control-btn" src={pause_svg} alt="pause button" onClick={pausePlay}></img>
             <input type="number" id="bpm" min="40" max="208" value={bpm !== null ? bpm : ""} onChange={(e)=>bpmChange(e, e.target.value)}/>
           </div>
 
@@ -458,6 +493,8 @@ function Room(props) {
               </div> 
             </div> : null
           }
+
+          {testMsg}
 
         </div>
       
