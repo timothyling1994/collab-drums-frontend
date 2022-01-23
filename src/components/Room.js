@@ -6,7 +6,7 @@ import uniqid from "uniqid";
 import vinyl_svg from '../public/vinyl.svg';
 import play_svg from '../public/play.svg';
 import pause_svg from '../public/pause.svg';
-import trash_svg from '../public/trash.svg';
+
 
 import socketIOClient from "socket.io-client";
 
@@ -16,11 +16,10 @@ const ENDPOINT = "http://localhost:8080";
 
 function Room(props) {
 
-  //const socket = socketIOClient(ENDPOINT);
+  const [currentSocket,setCurrentSocket] = useState(null);
   const [roomURL,setRoomURL] = useState(null);
   const [roomId,setRoomId] = useState(null);
 
-  const propsRoomId = props.roomId;
   const [grid,setGrid] = useState(null);
   
   const [audioNamesInitComplete, setAudioNamesInitComplete] = useState(false);
@@ -175,45 +174,35 @@ function Room(props) {
     setPlay(false);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
+    
     const socket = socketIOClient(ENDPOINT);
 
-    console.log("joining-room-pre");
+    setCurrentSocket(socket);
+  
     socket.emit('joining-room', props.roomId);
-    console.log("joining-room-post");
-
 
     socket.on('user-connected', () => {
       console.log('a user connected');
       setTestMsg("user-connected");
     });
 
-    socket.on('user-disconnected', name => {
-      console.log('user disconnected:'+name);
+    socket.on('user-disconnected', () => {
+      console.log('user disconnected');
     });
+
+    socket.on('bpm-updated', (newBPM) => {
+      setBPM(newBPM);
+    });
+
+  
+    setRoomId(props.roomId);
 
     return () => {
       socket.disconnect();
     };
-
-  },[]);
-
-  useEffect(() => {
     
-    /*
-    socket.on('user-connected', () => {
-      console.log('a user connected');
-      setTestMsg("user-connected");
-    });
-
-    socket.on('user-disconnected', name => {
-      console.log('user disconnected:'+name);
-    });
-    */
-  
-    setRoomId(propsRoomId);
-    
-  },[propsRoomId]);
+  },[props.roomId]);
 
   useEffect(() => {
 
@@ -382,6 +371,15 @@ function Room(props) {
     if(grid !== null)
     {
       setGridInitComplete(true);
+
+      currentSocket.on('room-settings-updated', (newInstrumentArr, trackNum) => {
+    
+        let tempArr = [...grid];
+
+        tempArr[trackNum] = newInstrumentArr;
+
+        setGrid(tempArr);
+      });
     }
   },[grid]);
 
@@ -390,6 +388,13 @@ function Room(props) {
     if(audioSamples !== null)
     {
       setAudioInitComplete(true);
+
+      currentSocket.on('audio-settings-updated', (downloadURL, trackNum, sampleName) => {
+    
+        let tempArr = [...audioSamples];
+        tempArr[trackNum] = new Audio(downloadURL);
+        setAudioSamples(tempArr);
+      });
     }
   },[audioSamples]);
 
@@ -398,6 +403,13 @@ function Room(props) {
     if(audioSampleNames !== null)
     {
       setAudioNamesInitComplete(true);
+
+      currentSocket.on('audio-sample-name-updated', (sampleName, trackNum) => {
+
+        let tempArr = [...audioSampleNames];
+        tempArr[trackNum] = sampleName;
+        setAudioSampleNames(tempArr);
+      });
     }
   },[audioSampleNames]);
 
